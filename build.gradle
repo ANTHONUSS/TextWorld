@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group = 'fr.anthonus'
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.glassfish.tyrus.bundles/tyrus-standalone-client
+    implementation 'org.glassfish.tyrus.bundles:tyrus-standalone-client:2.2.0'
+    // https://mvnrepository.com/artifact/org.glassfish.tyrus/tyrus-server
+    implementation 'org.glassfish.tyrus:tyrus-server:2.2.0'
+    implementation 'org.glassfish.tyrus:tyrus-container-grizzly-server:2.2.0'
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+test {
+    useJUnitPlatform()
+}
