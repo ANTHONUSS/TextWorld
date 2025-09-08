@@ -3,6 +3,7 @@ package fr.anthonus.dataBase;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 public class DataBaseManager {
     private static final String DB_URL = "jdbc:sqlite:database/cells.db";

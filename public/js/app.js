@@ -66,16 +66,18 @@ window.addEventListener("keydown", (e) => {
 
 window.addEventListener("paste", (e) => {
     const text = e.clipboardData.getData("text/plain");
+    let cellsToUpdate = [];
     for (const char of text) {
         if (char === "\n") {
             cellCursorX = lineStartX;
             cellCursorY += 1;
         } else {
             setCell(cellCursorX, cellCursorY, char);
-            sendUpdateCell(cellCursorX, cellCursorY, char);
+            cellsToUpdate.push({ x: cellCursorX, y: cellCursorY, c: char });
         }
         cellCursorX += 1;
     }
+    sendUpdateCellBlock(cellsToUpdate);
 
     lineStartX = cellCursorX;
     lineStartY = cellCursorY;

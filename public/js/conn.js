@@ -13,16 +13,17 @@ ws.onmessage = (event) => {
     switch(data.type) {
         case "zone_data":
             console.log("Zone data received:", data);
-
             handleZoneData(data);
-
             break;
 
         case "cell_update":
             console.log("Cell update received:", data);
-
             handleCellUpdate(data);
+            break;
 
+        case "cell_update_block":
+            console.log("Cell block update received:", data);
+            handleCellBlockUpdate(data);
             break;
     }
 };
@@ -43,6 +44,19 @@ function handleCellUpdate(data) {
     } else {
         setCell(x, y, c);
     }
+    draw();
+}
+
+function handleCellBlockUpdate(data) {
+    const { chars: cellArray } = data;
+    cellArray.forEach(cell => {
+        const { x: cx, y: cy, c } = cell;
+        if (c === ' ') {
+            deleteCell(cx, cy);
+        } else {
+            setCell(cx, cy, c);
+        }
+    });
     draw();
 }
 
@@ -86,4 +100,22 @@ function sendUpdateCell(x, y, c) {
 
     ws.send(JSON.stringify(update));
     console.log("Cell update sent:", update);
+}
+
+function sendUpdateCellBlock(cells) {
+    if (ws.readyState !== WebSocket.OPEN) return;
+
+    const chars = cells.map(cell => ({
+        x: cell.x,
+        y: cell.y,
+        c: cell.c
+    }));
+
+    const update = {
+        type: "cell_update_block",
+        chars: chars
+    }
+
+    ws.send(JSON.stringify(update));
+    console.log("Cell block update sent:", update);
 }

@@ -1,9 +1,6 @@
 package fr.anthonus.server;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
+import com.google.gson.*;
 import fr.anthonus.dataBase.Cell;
 import fr.anthonus.dataBase.DataBaseManager;
 import jakarta.websocket.OnClose;
@@ -40,6 +37,7 @@ public class TextWorldEndPoint {
             switch (type) {
                 case "request_zone" -> handleRequestZone(jsonObject, session);
                 case "cell_update" -> handleCellUpdate(jsonObject, session);
+                case "cell_update_block" -> handleCellUpdateBlock(jsonObject, session);
                 default -> sendError(session, "Unknown type: " + type);
             }
         } catch (JsonSyntaxException | IllegalStateException e) {
@@ -98,6 +96,7 @@ public class TextWorldEndPoint {
             sendError(session, "Missing x/y/c|char for cell_update");
             return;
         }
+
         int x = jsonObject.get("x").getAsInt();
         int y = jsonObject.get("y").getAsInt();
         String c = jsonObject.get("c").getAsString();
@@ -109,6 +108,40 @@ public class TextWorldEndPoint {
         response.addProperty("y", y);
         response.addProperty("c", c);
 
+        sendBroadcast(session, response);
+    }
+
+    private void handleCellUpdateBlock(JsonObject jsonObject, Session session) {
+        if (!jsonObject.has("chars")) {
+            sendError(session, "Missing 'chars' array for cell_update_block");
+            return;
+        }
+
+        JsonArray charsJson = jsonObject.getAsJsonArray("chars");
+        for (JsonElement elem : charsJson) {
+            JsonObject cellJson = elem.getAsJsonObject();
+            if (!cellJson.has("x") || !cellJson.has("y") || !cellJson.has("c")) {
+                sendError(session, "Each cell in 'chars' must have x/y/c");
+                return;
+            }
+        }
+
+        for (JsonElement elem : charsJson) {
+            JsonObject cellJson = elem.getAsJsonObject();
+            int x = cellJson.get("x").getAsInt();
+            int y = cellJson.get("y").getAsInt();
+            String c = cellJson.get("c").getAsString();
+            DataBaseManager.saveCell(x, y, c);
+        }
+
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "cell_update_block");
+        response.add("chars", charsJson);
+
+        sendBroadcast(session, response);
+    }
+
+    private void sendBroadcast(Session session, JsonObject response) {
         for(Session s : sessions) {
             if (s.isOpen() && !s.getId().equals(session.getId())) {
                 try {

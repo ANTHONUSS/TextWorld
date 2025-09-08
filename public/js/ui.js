@@ -99,12 +99,16 @@ canvas.addEventListener("wheel", (e) => {
     cameraX = worldX - mouseX / zoom;
     cameraY = worldY - mouseY / zoom;
 
+    sendRequestZone();
+
     draw();
 }, {passive: false});
 
 window.addEventListener("resize", () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
+    sendRequestZone();
 
     draw();
 });
