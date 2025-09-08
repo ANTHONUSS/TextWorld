@@ -9,10 +9,10 @@ public class Main {
         DataBaseManager.initDatabase();
         DataBaseManager.loadCells();
 
-        Server server = new Server("localhost", 8080, "/", null, TextWorldEndPoint.class);
+        Server server = new Server("localhost", 30000, "/", null, TextWorldEndPoint.class);
         try {
             server.start();
-            System.out.println("Serveur WebSocket démarré sur ws://localhost:8080");
+            System.out.println("Serveur WebSocket démarré");
             Thread.currentThread().join();
         } catch (Exception e) {
             e.printStackTrace();
