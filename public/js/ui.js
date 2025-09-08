@@ -76,8 +76,7 @@ canvas.addEventListener("mousemove", (e) => {
 
         draw();
 
-        // sendRequestZone(cameraX-canvas.width, cameraY-canvas.height, canvas.width*3, canvas.height*3);
-        sendRequestZone(cameraX, cameraY, canvas.width, canvas.height);
+        sendRequestZone();
 
         canvas.style.cursor = "move";
     }

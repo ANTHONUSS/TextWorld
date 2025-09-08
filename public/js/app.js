@@ -6,14 +6,18 @@ function ensureCursorInView() {
 
     if (screenCursorX < margin) {
         cameraX = cellCursorX * CELL_WIDTH - margin / zoom;
+        sendRequestZone();
     } else if (screenCursorX > canvas.width - margin) {
         cameraX = cellCursorX * CELL_WIDTH - (canvas.width - margin) / zoom;
+        sendRequestZone();
     }
 
     if (screenCursorY < margin) {
         cameraY = cellCursorY * CELL_HEIGHT - margin / zoom;
+        sendRequestZone();
     } else if (screenCursorY > canvas.height - margin) {
         cameraY = cellCursorY * CELL_HEIGHT - (canvas.height - margin) / zoom;
+        sendRequestZone();
     }
 }
 
@@ -68,6 +72,7 @@ window.addEventListener("paste", (e) => {
             cellCursorY += 1;
         } else {
             setCell(cellCursorX, cellCursorY, char);
+            sendUpdateCell(cellCursorX, cellCursorY, char);
         }
         cellCursorX += 1;
     }
@@ -79,4 +84,3 @@ window.addEventListener("paste", (e) => {
 
 /* -------------------- MAIN -------------------- */
 draw();
-sendRequestZone(cameraX, cameraY, canvas.width, canvas.height);

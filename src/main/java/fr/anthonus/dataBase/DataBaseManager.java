@@ -9,7 +9,7 @@ public class DataBaseManager {
 
     public static void initDatabase() {
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            String createTableQuery = "create table Cells" +
+            String createTableQuery = "create table if not exists Cells" +
                     "(" +
                     "    x integer default 0 not null," +
                     "    y integer default 0 not null," +
@@ -36,28 +36,36 @@ public class DataBaseManager {
             pstmt.setInt(2, y);
             pstmt.setString(3, content);
             pstmt.executeUpdate();
-            System.out.println("Cellule sauvegardée : (" + x + ", " + y + ") -> " + content);
+
+            Cell cell = Cell.getCell(x, y);
+            if (cell != null) {
+                cell.c = content;
+            } else {
+                new Cell(x, y, content);
+            }
+
         } catch (SQLException e) {
             System.err.println("Erreur lors de la sauvegarde de la cellule : " + e.getMessage());
         }
     }
 
-    public static String loadCell(int x, int y) {
-        String selectQuery = "SELECT c FROM Cells WHERE x = ? AND y = ?;";
+    public static void loadCells() {
+        String selectQuery = "SELECT x, y, c FROM Cells";
+
         try (Connection conn = DriverManager.getConnection(DB_URL)) {
             var pstmt = conn.prepareStatement(selectQuery);
-            pstmt.setInt(1, x);
-            pstmt.setInt(2, y);
             var rs = pstmt.executeQuery();
-            if (rs.next()) {
-                return rs.getString("c");
-            } else {
-                System.err.println("Cellule non trouvée : (" + x + ", " + y + ")");
-                return null;
+
+            while (rs.next()) {
+                int x = rs.getInt("x");
+                int y = rs.getInt("y");
+                String c = rs.getString("c");
+
+                new Cell(x, y, c);
             }
         } catch (SQLException e) {
-            System.err.println("Erreur lors du chargement de la cellule : " + e.getMessage());
-            return null;
+            System.err.println("Erreur lors du chargement des cellules : " + e.getMessage());
         }
+
     }
 }
