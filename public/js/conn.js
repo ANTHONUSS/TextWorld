@@ -1,6 +1,6 @@
 let lastRequestTime = 0;
 const throttleDelay = 100;
-const ws = new WebSocket("wss://textworld.anthonus.fr");
+const ws = new WebSocket("wss://textworld.anthonus.fr/ws");
 
 ws.onopen = () => {
     console.log("Connected!");

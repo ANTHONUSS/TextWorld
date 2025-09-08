@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@ServerEndpoint("/")
+@ServerEndpoint("/ws")
 public class TextWorldEndPoint {
     private static final Set<Session> sessions = new CopyOnWriteArraySet<>();
 
