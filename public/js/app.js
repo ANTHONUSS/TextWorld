@@ -1,14 +1,15 @@
 /* -------------------- CURSEUR & FENÊTRE -------------------- */
 function ensureCursorInView() {
     const margin = 20;
-    const screenCursorX = cellCursorX * CELL_WIDTH * zoom - cameraX;
-    const screenCursorY = cellCursorY * CELL_HEIGHT * zoom - cameraY;
+    const screenCursorX = (cellCursorX * CELL_WIDTH - cameraX) * zoom;
+    const screenCursorY = (cellCursorY * CELL_HEIGHT - cameraY) * zoom;
 
     if (screenCursorX < margin) {
         cameraX = cellCursorX * CELL_WIDTH - margin / zoom;
     } else if (screenCursorX > canvas.width - margin) {
         cameraX = cellCursorX * CELL_WIDTH - (canvas.width - margin) / zoom;
     }
+
     if (screenCursorY < margin) {
         cameraY = cellCursorY * CELL_HEIGHT - margin / zoom;
     } else if (screenCursorY > canvas.height - margin) {
@@ -23,20 +24,30 @@ function updateLineStart() {
 }
 
 window.addEventListener("keydown", (e) => {
+    if (e.ctrlKey) return;
+
     if (e.key.length === 1) {
+        e.preventDefault();
+
         const char = e.key;
         setCell(cellCursorX, cellCursorY, char);
+        sendUpdateCell(cellCursorX, cellCursorY, char);
         cellCursorX += 1;
     }
 
     if (e.key === "Space") {
+        e.preventDefault();
+
         deleteCell(cellCursorX, cellCursorY);
+        sendUpdateCell(cellCursorX, cellCursorY, ' ');
         cellCursorX += 1;
     }
 
     if (e.key === "Backspace") {
         e.preventDefault();
+
         deleteCell(cellCursorX-1, cellCursorY);
+        sendUpdateCell(cellCursorX-1, cellCursorY, ' ');
         cellCursorX -= 1;
     }
 
@@ -68,3 +79,4 @@ window.addEventListener("paste", (e) => {
 
 /* -------------------- MAIN -------------------- */
 draw();
+sendRequestZone(cameraX, cameraY, canvas.width, canvas.height);

@@ -22,12 +22,7 @@ public class TextWorldEndPoint {
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
-        // Réplication du message à tous
-        for (Session s : sessions) {
-            if (s.isOpen()) {
-                s.getBasicRemote().sendText(message);
-            }
-        }
+
     }
 
     @OnClose

@@ -37,7 +37,7 @@ function draw() {
 
 /* -------------------- COORDONNÉES -------------------- */
 function updateCoordsDisplay() {
-    document.getElementById("coords").textContent = `X: ${Math.round(cameraX)} Y: ${Math.round(cameraY)}`;
+    document.getElementById("coords").textContent = `X: ${cellCursorX} | Y: ${cellCursorY}`;
 }
 
 /* -------------------- DÉPLACEMENT / SELECTION -------------------- */
@@ -56,11 +56,14 @@ canvas.addEventListener("click", (e) => {
 
 canvas.addEventListener("mousedown", (e) => {
     isDragging = true;
+
     dragStart.x = e.clientX;
     dragStart.y = e.clientY;
 });
 canvas.addEventListener("mouseup", () => {
     isDragging = false;
+
+    canvas.style.cursor = "default";
 });
 canvas.addEventListener("mousemove", (e) => {
     if (isDragging) {
@@ -72,6 +75,11 @@ canvas.addEventListener("mousemove", (e) => {
         dragStart.y = e.clientY;
 
         draw();
+
+        // sendRequestZone(cameraX-canvas.width, cameraY-canvas.height, canvas.width*3, canvas.height*3);
+        sendRequestZone(cameraX, cameraY, canvas.width, canvas.height);
+
+        canvas.style.cursor = "move";
     }
 });
 
@@ -108,7 +116,6 @@ window.addEventListener("keydown", (e) => {
     if (e.key === "ArrowUp") changeArrow(false, -1);
     if (e.key === "ArrowDown") changeArrow(false, 1);
 });
-
 function changeArrow(way, value){
     if (way) cellCursorX += value;
     else cellCursorY += value;
