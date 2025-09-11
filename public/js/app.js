@@ -50,8 +50,8 @@ window.addEventListener("keydown", (e) => {
     if (e.key === "Backspace") {
         e.preventDefault();
 
-        deleteCell(cellCursorX-1, cellCursorY);
-        sendUpdateCell(cellCursorX-1, cellCursorY, ' ');
+        deleteCell(cellCursorX - 1, cellCursorY);
+        sendUpdateCell(cellCursorX - 1, cellCursorY, ' ');
         cellCursorX -= 1;
     }
 
@@ -73,7 +73,7 @@ window.addEventListener("paste", (e) => {
             cellCursorY += 1;
         } else {
             setCell(cellCursorX, cellCursorY, char);
-            cellsToUpdate.push({ x: cellCursorX, y: cellCursorY, c: char });
+            cellsToUpdate.push({x: cellCursorX, y: cellCursorY, c: char});
         }
         cellCursorX += 1;
     }
@@ -81,6 +81,43 @@ window.addEventListener("paste", (e) => {
 
     lineStartX = cellCursorX;
     lineStartY = cellCursorY;
+    draw();
+});
+
+
+const inputField = document.createElement("input");
+inputField.style.position = "absolute";
+inputField.style.opacity = "0";
+inputField.style.pointerEvents = "none";
+document.body.appendChild(inputField);
+
+canvas.addEventListener("touchstart", (e) => {
+    if (e.touches.length === 1) {
+        const rect = canvas.getBoundingClientRect();
+        const touchX = e.touches[0].clientX - rect.left;
+        const touchY = e.touches[0].clientY - rect.top;
+        const worldX = (touchX / zoom) + cameraX;
+        const worldY = (touchY / zoom) + cameraY;
+        cellCursorX = Math.floor(worldX / CELL_WIDTH);
+        cellCursorY = Math.floor(worldY / CELL_HEIGHT);
+
+        inputField.style.left = `${e.touches[0].clientX}px`;
+        inputField.style.top = `${e.touches[0].clientY}px`;
+        setTimeout(() => {
+            inputField.focus();
+        }, 100);
+
+        draw();
+        updateLineStart();
+    }
+});
+
+inputField.addEventListener("input", (e) => {
+    const char = e.target.value;
+    setCell(cellCursorX, cellCursorY, char);
+    sendUpdateCell(cellCursorX, cellCursorY, char);
+    cellCursorX += 1;
+    inputField.value = "";
     draw();
 });
 

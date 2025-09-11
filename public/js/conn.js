@@ -2,7 +2,7 @@
 let ws;
 let heartbeatTimeout;
 function connect() {
-    ws = new WebSocket("ws://localhost:30000/ws");
+    ws = new WebSocket("ws://10.63.84.165:30000/ws");
     // ws = new WebSocket("wss://textworld.anthonus.fr/ws");
 
     ws.onopen = () => {
