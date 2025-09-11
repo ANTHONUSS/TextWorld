@@ -1,32 +1,85 @@
-let lastRequestTime = 0;
-const throttleDelay = 100;
-const ws = new WebSocket("wss://textworld.anthonus.fr/ws");
+/* -------------------- WEBSOCKET CONNECTION -------------------- */
+let ws;
+let heartbeatTimeout;
+function connect() {
+    ws = new WebSocket("ws://localhost:30000/ws");
+    // ws = new WebSocket("wss://textworld.anthonus.fr/ws");
 
-ws.onopen = () => {
-    console.log("Connected!");
-    sendRequestZone();
+    ws.onopen = () => {
+        console.log("Connected!");
+        hideOfflinePopup();
+        sendPing(); // Start heartbeat
+        sendRequestZone();
+    }
+
+    ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+
+        switch(data.type) {
+            case "zone_data":
+                console.log("Zone data received:", data);
+                handleZoneData(data);
+                break;
+
+            case "cell_update":
+                console.log("Cell update received:", data);
+                handleCellUpdate(data);
+                break;
+
+            case "cell_update_block":
+                console.log("Cell block update received:", data);
+                handleCellBlockUpdate(data);
+                break;
+
+            case "pong":
+                console.log("Pong received:", data);
+                resetHeartbeat();
+                break;
+
+            default:
+                console.log("Unknown message type:", data.type);
+                break;
+
+        }
+    };
+
+    ws.onclose = () => {
+        showOfflinePopup();
+        console.log("Disconnected! Reconnecting...");
+        connect();
+    }
+
+    ws.onerror = (event) => {
+        console.error("WebSocket error observed:", event);
+        console.error("Closing connection.");
+        ws.close();
+    }
 }
 
-ws.onmessage = (event) => {
-    const data = JSON.parse(event.data);
+function sendPing() {
+    if (ws.readyState === WebSocket.OPEN) {
 
-    switch(data.type) {
-        case "zone_data":
-            console.log("Zone data received:", data);
-            handleZoneData(data);
-            break;
+        const ping = { type: "ping" };
+        ws.send(JSON.stringify(ping));
+        console.log("Ping sent: ", ping);
 
-        case "cell_update":
-            console.log("Cell update received:", data);
-            handleCellUpdate(data);
-            break;
+        heartbeatTimeout = setTimeout(() => {
+            console.log("No pong received, closing connection.");
+            ws.close();
+        }, 10_000);
 
-        case "cell_update_block":
-            console.log("Cell block update received:", data);
-            handleCellBlockUpdate(data);
-            break;
     }
-};
+    setTimeout(sendPing, 30_000);
+}
+
+function resetHeartbeat() {
+    clearTimeout(heartbeatTimeout);
+}
+
+console.log('Connecting...');
+connect();
+
+/* -------------------- HANDLE DATA -------------------- */
 
 function handleZoneData(data) {
     const { x, y, w, h, chars: cellArray } = data;
@@ -60,7 +113,10 @@ function handleCellBlockUpdate(data) {
     draw();
 }
 
+/* -------------------- SEND REQUESTS -------------------- */
 
+let lastRequestTime = 0;
+const throttleDelay = 100;
 function sendRequestZone() {
     const x = Math.floor(cameraX / CELL_WIDTH);
     const endCol = Math.ceil((cameraX + canvas.width / zoom) / CELL_WIDTH);
@@ -118,4 +174,13 @@ function sendUpdateCellBlock(cells) {
 
     ws.send(JSON.stringify(update));
     console.log("Cell block update sent:", update);
+}
+
+/* -------------------- POPUP -------------------- */
+function showOfflinePopup() {
+    document.getElementById("offline").style.transform = "translateY(0px)";
+}
+
+function hideOfflinePopup() {
+    document.getElementById("offline").style.transform = "translateY(100px)";
 }

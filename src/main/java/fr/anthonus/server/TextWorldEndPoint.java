@@ -38,6 +38,7 @@ public class TextWorldEndPoint {
                 case "request_zone" -> handleRequestZone(jsonObject, session);
                 case "cell_update" -> handleCellUpdate(jsonObject, session);
                 case "cell_update_block" -> handleCellUpdateBlock(jsonObject, session);
+                case "ping" -> handlePing(session);
                 default -> sendError(session, "Unknown type: " + type);
             }
         } catch (JsonSyntaxException | IllegalStateException e) {
@@ -141,6 +142,17 @@ public class TextWorldEndPoint {
         sendBroadcast(session, response);
     }
 
+    private void handlePing(Session session) {
+        JsonObject response = new JsonObject();
+        response.addProperty("type", "pong");
+        try {
+            session.getBasicRemote().sendText(response.toString());
+            System.out.println("Envoyé pong à " + session.getId());
+        } catch (IOException e) {
+            System.err.println("Erreur lors de l'envoi du pong : " + e.getMessage());
+        }
+    }
+
     private void sendBroadcast(Session session, JsonObject response) {
         for(Session s : sessions) {
             if (s.isOpen() && !s.getId().equals(session.getId())) {
@@ -153,7 +165,6 @@ public class TextWorldEndPoint {
             }
         }
     }
-
 
     private void sendError(Session session, String message) {
         JsonObject error = new JsonObject();

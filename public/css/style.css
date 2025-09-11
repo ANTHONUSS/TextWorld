@@ -25,3 +25,23 @@ canvas {
     z-index: 1000;
     pointer-events: none;
 }
+
+#offline {
+    display: block;
+    position: fixed;
+    bottom: 15px;
+    right: 15px;
+    transform: translateY(0px);
+    background: red;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+
+    transition: transform 0.3s ease-in-out;
+}
+
+#offline:before {
+    content: "⚠ ";
+    font-size: 18px;
+    vertical-align: middle;
+}
