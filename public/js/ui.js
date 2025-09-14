@@ -1,7 +1,7 @@
 /* -------------------- TEXTE -------------------- */
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = accentColor;
     ctx.font = `${CELL_HEIGHT * zoom}px monospace`;
     ctx.textBaseline = "top";
 
@@ -18,6 +18,7 @@ function draw() {
                 const ch = cell.getChar();
                 const screenX = (cell.x * CELL_WIDTH - cameraX) * zoom;
                 const screenY = (cell.y * CELL_HEIGHT - cameraY) * zoom;
+                ctx.fillStyle = textColor;
                 ctx.fillText(ch, screenX, screenY);
             }
         }
@@ -29,7 +30,7 @@ function draw() {
     const sx = (cellCursorX * CELL_WIDTH - cameraX) * zoom - (w - baseW) / 2;
     const sy = (cellCursorY * CELL_HEIGHT - cameraY) * zoom - (h - baseH) / 2;
 
-    ctx.fillStyle = "rgb(11,239,214)";
+    ctx.fillStyle = accentColor;
     ctx.fillRect(sx, sy, w, h);
 
     updateCoordsDisplay();
@@ -39,6 +40,16 @@ function draw() {
 function updateCoordsDisplay() {
     document.getElementById("coords").textContent = `X: ${cellCursorX} | Y: ${cellCursorY}`;
 }
+
+/* -------------------- THEME -------------------- */
+themeToggle.addEventListener("click", () => {
+    const newTheme = canvas.getAttribute("data-theme") === "light" ? "dark" : "light";
+    canvas.setAttribute("data-theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem('theme', newTheme); // Enregistrer dans localStorage
+    updateColors();
+    draw();
+});
 
 /* -------------------- DÉPLACEMENT / SELECTION -------------------- */
 canvas.addEventListener("click", (e) => {

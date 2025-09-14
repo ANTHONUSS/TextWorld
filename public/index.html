@@ -9,8 +9,19 @@
 </head>
 <body>
 
-<canvas id="world" style="background: #333; width: 100vw; height: 100vh;"></canvas>
-<div id="coords"></div>
+<div id="loader">
+    Chargement...
+    <p id="loader-timeout">Chargement infinit ? <a href="mailto:support@anthonus.fr">Contactez moi</a></p>
+</div>
+
+
+
+
+<canvas id="world"></canvas>
+<div id="overlay">
+    <button id="theme-toggle" class="overlay-elements">Changer le thème</button>
+    <div id="coords" class="overlay-elements"></div>
+</div>
 
 <script src="js/init.js"></script>
 <script src="js/cells.js"></script>

@@ -2,11 +2,12 @@
 let ws;
 let heartbeatTimeout;
 function connect() {
-    ws = new WebSocket("ws://10.63.84.165:30000/ws");
+    ws = new WebSocket("ws://192.168.1.176:30000/ws");
     // ws = new WebSocket("wss://textworld.anthonus.fr/ws");
 
     ws.onopen = () => {
         console.log("Connected!");
+        hideLoader();
         hideOfflinePopup();
         sendPing(); // Start heartbeat
         sendRequestZone();
