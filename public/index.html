@@ -9,13 +9,18 @@
 </head>
 <body>
 
-<div id="loader">
+<noscript>
+    <div id="noJS" class="loader">
+        <h1>JavaScript est requis</h1>
+        <p>Ce site utilise JavaScript pour fonctionner. Veuillez activer JavaScript dans les paramètres de votre
+            navigateur et recharger la page.</p>
+    </div>
+</noscript>
+
+<div id="loader" class="loader">
     Chargement...
     <p id="loader-timeout">Chargement infinit ? <a href="mailto:support@anthonus.fr">Contactez moi</a></p>
 </div>
-
-
-
 
 <canvas id="world"></canvas>
 <div id="overlay">

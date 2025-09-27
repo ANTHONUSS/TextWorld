@@ -24,7 +24,7 @@ html, body {
     overflow: hidden;
 }
 
-#loader {
+.loader {
     position: fixed;
     top: 0;
     left: 0;
@@ -38,6 +38,14 @@ html, body {
     justify-content: center;
     font-family: monospace;
     font-size: 20px;
+}
+
+#noJS {
+    z-index: 10001;
+}
+
+#loader {
+
     z-index: 10000;
 
     transition: opacity 0.3s;
