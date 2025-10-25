@@ -7,25 +7,6 @@ import java.sql.SQLException;
 public class DataBaseManager {
     private static final String DB_URL = "jdbc:sqlite:database/cells.db";
 
-    public static void initDatabase() {
-        try (Connection conn = DriverManager.getConnection(DB_URL)) {
-            String createTableQuery = "create table if not exists Cells" +
-                    "(" +
-                    "    x integer default 0 not null," +
-                    "    y integer default 0 not null," +
-                    "    c TEXT," +
-                    "    constraint Cells_pk" +
-                    "        primary key (y, x)" +
-                    ");";
-
-            conn.createStatement().execute(createTableQuery);
-            System.out.println("Base de données initialisée avec succès.");
-
-        } catch (SQLException e) {
-            throw new RuntimeException("Erreur lors du chargement de la base de données : " + e);
-        }
-    }
-
     public static void saveCell(int x, int y, String content) {
         String insertQuery = "INSERT INTO Cells (x, y, c) VALUES (?, ?, ?)" +
                 "ON CONFLICT(x, y) DO UPDATE SET c=excluded.c;";
@@ -66,6 +47,8 @@ public class DataBaseManager {
         } catch (SQLException e) {
             System.err.println("Erreur lors du chargement des cellules : " + e.getMessage());
         }
+
+        System.out.println("Chargement des cellules terminé");
 
     }
 }
