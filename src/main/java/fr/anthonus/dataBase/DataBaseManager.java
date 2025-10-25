@@ -3,6 +3,7 @@ package fr.anthonus.dataBase;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 public class DataBaseManager {
     private static final String DB_URL = "jdbc:sqlite:database/cells.db";
@@ -22,8 +23,41 @@ public class DataBaseManager {
             if (cell != null) {
                 cell.c = content;
             } else {
-                new Cell(x, y, content);
+                Cell.cells.add(new Cell(x, y, content));
             }
+
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la sauvegarde de la cellule : " + e.getMessage());
+        }
+    }
+
+    public static void saveCellBlock(List<Cell> cells) {
+        String insertQuery = "INSERT INTO Cells (x, y, c) VALUES (?, ?, ?)" +
+                "ON CONFLICT(x, y) DO UPDATE SET c=excluded.c";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL)) {
+            conn.setAutoCommit(false);
+            var pstmt = conn.prepareStatement(insertQuery);
+
+            for (Cell cell : cells) {
+                pstmt.setInt(1, cell.x);
+                pstmt.setInt(2, cell.y);
+                pstmt.setString(3, cell.c);
+                pstmt.addBatch();
+            }
+
+            pstmt.executeBatch();
+            conn.commit();
+
+            for (Cell cell : cells) {
+                Cell existingCell = Cell.getCell(cell.x, cell.y);
+                if (existingCell != null) {
+                    existingCell.c = cell.c;
+                } else {
+                    Cell.cells.add(cell);
+                }
+            }
+
 
         } catch (SQLException e) {
             System.err.println("Erreur lors de la sauvegarde de la cellule : " + e.getMessage());
@@ -42,7 +76,7 @@ public class DataBaseManager {
                 int y = rs.getInt("y");
                 String c = rs.getString("c");
 
-                new Cell(x, y, c);
+                Cell.cells.add(new Cell(x, y, c));
             }
         } catch (SQLException e) {
             System.err.println("Erreur lors du chargement des cellules : " + e.getMessage());

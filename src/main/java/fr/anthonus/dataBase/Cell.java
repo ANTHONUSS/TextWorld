@@ -21,8 +21,6 @@ public class Cell {
         this.x = x;
         this.y = y;
         this.c = c;
-
-        cells.add(this);
     }
 
     public static Cell getCell(int x, int y){

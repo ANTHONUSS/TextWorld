@@ -23,6 +23,11 @@ public class Main {
             String input = scanner.nextLine();
 
             switch (input) {
+                case "help" -> {
+                    System.out.println("Commandes disponibles:");
+                    System.out.println("- stop");
+                    System.out.println("- restart");
+                }
                 case "stop" -> {
                     System.out.println("Arrêt du serveur...");
                     server.stop();

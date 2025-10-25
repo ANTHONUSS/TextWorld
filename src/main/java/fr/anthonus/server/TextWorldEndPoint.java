@@ -10,6 +10,7 @@ import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
@@ -127,13 +128,15 @@ public class TextWorldEndPoint {
             }
         }
 
+        List<Cell> cellsToUpdate = new ArrayList<>();
         for (JsonElement elem : charsJson) {
             JsonObject cellJson = elem.getAsJsonObject();
             int x = cellJson.get("x").getAsInt();
             int y = cellJson.get("y").getAsInt();
             String c = cellJson.get("c").getAsString();
-            DataBaseManager.saveCell(x, y, c);
+            cellsToUpdate.add(new Cell(x, y, c));
         }
+        DataBaseManager.saveCellBlock(cellsToUpdate);
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "cell_update_block");
