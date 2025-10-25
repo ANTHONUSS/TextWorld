@@ -9,7 +9,7 @@ public class Main {
         DataBaseManager.initDatabase();
         DataBaseManager.loadCells();
 
-        Server server = new Server("localhost", 30000, "/", null, TextWorldEndPoint.class);
+        Server server = new Server("127.0.0.1", 30000, "/", null, TextWorldEndPoint.class);
         try {
             server.start();
             System.out.println("Serveur WebSocket démarré");
