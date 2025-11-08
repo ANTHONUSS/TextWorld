@@ -1,7 +1,5 @@
 package fr.anthonus;
 
-import fr.anthonus.dataBase.Cell;
-import fr.anthonus.dataBase.DataBaseManager;
 import fr.anthonus.server.TextWorldEndPoint;
 import jakarta.websocket.DeploymentException;
 import org.glassfish.tyrus.server.Server;

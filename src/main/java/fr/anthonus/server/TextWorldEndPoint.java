@@ -8,10 +8,13 @@ import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
 import jakarta.websocket.Session;
 import jakarta.websocket.server.ServerEndpoint;
+import org.glassfish.tyrus.core.TyrusSession;
+import org.glassfish.tyrus.spi.Connection;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -21,6 +24,7 @@ public class TextWorldEndPoint {
 
     @OnOpen
     public void onOpen(Session session) {
+        getIP(session);
         sessions.add(session);
         System.out.println("Client connecté : " + session.getId());
     }
@@ -102,7 +106,8 @@ public class TextWorldEndPoint {
         int x = jsonObject.get("x").getAsInt();
         int y = jsonObject.get("y").getAsInt();
         String c = jsonObject.get("c").getAsString();
-        DataBaseManager.saveCell(x, y, c);
+        String address = session.getUserProperties().get("org.glassfish.tyrus.remoteAddress").toString();
+        DataBaseManager.saveCell(x, y, c, address);
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "cell_update");
@@ -136,7 +141,8 @@ public class TextWorldEndPoint {
             String c = cellJson.get("c").getAsString();
             cellsToUpdate.add(new Cell(x, y, c));
         }
-        DataBaseManager.saveCellBlock(cellsToUpdate);
+        String address = session.getUserProperties().get("org.glassfish.tyrus.remoteAddress").toString();
+        DataBaseManager.saveCellBlock(cellsToUpdate, address);
 
         JsonObject response = new JsonObject();
         response.addProperty("type", "cell_update_block");
@@ -178,5 +184,20 @@ public class TextWorldEndPoint {
         } catch (IOException e) {
             System.err.println("Impossible d'envoyer l'erreur au client " + session.getId() + ": " + e.getMessage());
         }
+    }
+
+    private void getIP(Session session) {
+
+        String ip = (String) session.getUserProperties().get("remote-ip");
+        System.out.println(ip);
+
+//        // Tyrus standalone/Grizzly définit souvent cette clé :
+//        Object addrObj = session.getUserProperties().get("org.glassfish.tyrus.remoteAddress");
+//        String ip = "unknown";
+//        if (addrObj != null) {
+//            ip = addrObj.toString().replaceAll("^/|:.*$", "");
+//        }
+//
+//        System.out.println("Client connected from " + ip);
     }
 }
