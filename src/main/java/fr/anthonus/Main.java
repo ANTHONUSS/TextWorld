@@ -10,23 +10,21 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws DeploymentException {
-        System.out.println("Chargement des cellules...");
-        DataBaseManager.loadCells();
+        System.out.println("Démarrage du serveur...");
 
         Server server = new Server("127.0.0.1", 30000, "/", null, TextWorldEndPoint.class);
-
         server.start();
+
         System.out.println("Serveur WebSocket démarré");
 
         Scanner scanner = new Scanner(System.in);
+        String input = "help";
         while (true) {
-            String input = scanner.nextLine();
-
             switch (input) {
                 case "help" -> {
                     System.out.println("Commandes disponibles:");
-                    System.out.println("- stop");
-                    System.out.println("- restart");
+                    System.out.println("\tstop");
+                    System.out.println("\trestart");
                 }
                 case "stop" -> {
                     System.out.println("Arrêt du serveur...");
@@ -38,16 +36,15 @@ public class Main {
                     System.out.println("Arrêt du serveur...");
                     server.stop();
 
-                    System.out.println("Rechargement des cellules...");
-                    Cell.cells.clear();
-                    DataBaseManager.loadCells();
-
                     System.out.println("Démarrage du serveur...");
                     server.start();
                     System.out.println("Serveur WebSocket démarré");
                 }
                 default -> System.out.println("Commande inconnue");
             }
+
+
+            input = scanner.nextLine();
         }
     }
 }

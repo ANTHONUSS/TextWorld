@@ -74,9 +74,9 @@ public class TextWorldEndPoint {
         response.addProperty("w", width);
         response.addProperty("h", height);
 
-        List<Cell> cells = Cell.getCellsInArea(x, y, width, height);
+        List<Cell> cells = DataBaseManager.getCellBlock(x, y, width, height);
         JsonArray chars = new JsonArray();
-        for (var cell : cells) {
+        for (Cell cell : cells) {
             JsonObject cellJson = new JsonObject();
             cellJson.addProperty("x", cell.x);
             cellJson.addProperty("y", cell.y);
